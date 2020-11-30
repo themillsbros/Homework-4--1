@@ -165,11 +165,103 @@ list_t filter_even(list_t list){
 /*rotate
 test if n=0 or list empty
 pass first element, n for given amount of rotation, fresh list, and rest of old list to helper
-
-helper: couldnt figure out. somehow push old list onto  fresh list n amount of times
-*/   
+*/
 static list_t rotateHelper(int element, int count, list_t newList, list_t existingList){
-  return 0;
+if(count == 1 && !list_isEmpty(existingList)){
+newList = list_make(element, newList);
+newList = reverse(newList);
+newList = append(existingList, newList);
+return newList;
+}
+if(list_isEmpty(existingList) && count > 1 ){
+newList = list_make(element, newList);
+newList = reverse(newList);
+return rotate(newList, count-1);
+}
+newList = list_make(element, newList);
+return rotateHelper(list_first(existingList), count-1, newList, list_rest(existingList));
+
+}
+
+list_t rotate(list_t list, unsigned int n){
+if(list_isEmpty(list) || n == 0){
+return list;
+}
+list_t newList = list_make();
+return rotateHelper(list_first(list), n, newList, list_rest(list));
+
+}
+
+static list_t insert_listHelper(list_t resultList, int element, int count, list_t seconList, list_t existingList ){
+if(count == 1 || list_isEmpty(existingList)){
+resultList = list_make(element, resultList);
+resultList = reverse(resultList);
+resultList = append(resultList, seconList);
+if(!list_isEmpty(existingList)){
+resultList = append(resultList, existingList);
+}
+return resultList;
+}
+resultList = list_make(element, resultList);
+return insert_listHelper(resultList, list_first(existingList), count-1, seconList, list_rest(existingList));
+}
+
+list_t insert_list(list_t first, list_t second, unsigned int n){
+if(n == 0 && list_isEmpty(first) && list_isEmpty(second)){
+return first;
+}
+if(n == 0){
+return append(second, first);
+}
+if(list_isEmpty(first)){
+return second;
+}
+if(list_isEmpty(second)){
+return first;
+}
+list_t newList = list_make();
+return insert_listHelper(newList, list_first(first), n, second,list_rest(first));
+}
+
+static list_t chopHelper(int element, int count, list_t list){
+if(count == 0){
+list = reverse(list);
+return list;
+}
+return chopHelper(list_first(list), count-1, list_rest(list));
+}
+
+list_t chop(list_t l, unsigned int n){
+if(list_isEmpty(l)|| n == 0){
+return l;
+}
+l = reverse(l);
+return chopHelper(list_first(l), n-1, list_rest(l));
+}
+
+
+//filter
+bool filterHelper(list_t list, bool (*fn)(int))
+{ if(fn(list_first(list))){
+return true;
+}
+else{
+return false;
+}
+}
+
+list_t filter(list_t list, bool (*fn)(int)){
+if(list_isEmpty(list)){
+return list;
+}
+else {
+if(filterHelper(list, fn)){
+return list_make(list_first(list), filter(list_rest(list), fn));
+}
+else{
+return filter(list_rest(list), fn);
+}
+}
 }
 
 //recursive fib
